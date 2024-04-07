@@ -59,7 +59,7 @@ By following these steps, the script enables users to conveniently download Inst
 
 
 ## Notes
-
+- Tested and verified in Linux & Windows OS.
 - This script requires the Google Chrome browser and its driver suitable for your operating system.
 - Remember that downloading content from social media platforms may be restricted by copyright and Instagram's terms of service.
 
