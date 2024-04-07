@@ -90,6 +90,7 @@ def run_script():
     # Folder
     download_folder = r"(YOUR FOLDER PATH)"
     # Example = r"C:\Users\PC\Downloads\InstaDownloader"
+    # Example = r"/home/kali/Downloads/InstaDownloader/"
     # User                                                 User id ↓
     instagram_stories_url = "https://www.instagram.com/stories/jiri_mdf/0"
     ######################################################################
