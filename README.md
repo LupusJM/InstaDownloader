@@ -41,8 +41,8 @@ By following these steps, the script enables users to conveniently download Inst
 ## Usage
 
 1. **Configuration**:
-   - Modify the \`download_folder\` variable to your target directory. You can right-click on the script, choose "Open With" and select Notepad. Then, change the \`download_folder\` variable to point to your desired folder path.
-   - Update the \`instagram_stories_url\` variable with the URL of the Instagram story you want to download.
+   - Modify the `download_folder` variable to your target directory. You can right-click on the script, choose "Open With" and select Notepad. Then, change the `download_folder` variable to point to your desired folder path.
+   - Update the `instagram_stories_url` variable with the URL of the Instagram story you want to download.
 
 2. **Run the Script**:
 
