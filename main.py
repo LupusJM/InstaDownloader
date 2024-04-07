@@ -86,7 +86,6 @@ def record_downloaded_link(download_url, download_folder):
 
 def run_script():
 
-
     ######################################################################
     # Folder
     download_folder = r"(YOUR FOLDER PATH)"
