@@ -1,6 +1,6 @@
 # Instagram Stories Downloader
 
->> NOT WORKING NOW!
+> NOT WORKING NOW!
 
 This script allows you to download Instagram stories from any public account.<br>
 You can also automate the script to run at system startup, for example, every 2 hours using Task Scheduler.
