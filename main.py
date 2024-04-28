@@ -102,9 +102,8 @@ def run_script():
             pass
 
     task_file_path = os.path.join(download_folder, 'task.txt')
-    if not os.path.exists(task_file_path):
-        with open(task_file_path, 'w') as task_file:
-            task_file.write(f'{datetime.now()} - The script ran\n')
+    with open(task_file_path, 'a') as task_file:
+        task_file.write(f'{datetime.now()} - The script ran\n')
 
     if not get_instagram_stories(username, download_folder):
         return False
