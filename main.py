@@ -6,10 +6,9 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import time
 from datetime import datetime
-import urllib.parse
 
 
-def get_instagram_stories(url, download_folder):
+def get_instagram_stories(username, download_folder):
     options = webdriver.ChromeOptions()
     options.add_argument('--headless')
     driver = webdriver.Chrome(options=options)
@@ -26,7 +25,7 @@ def get_instagram_stories(url, download_folder):
         url_input = WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//input[@name='url']"))
         )
-        url_input.send_keys(url)
+        url_input.send_keys(f"{username}")
 
         url_input.submit()
 
@@ -34,7 +33,6 @@ def get_instagram_stories(url, download_folder):
             EC.presence_of_element_located((By.XPATH, "//button[contains(@class, 'ads-modal-close')]"))
         )
         close_button.click()
-
         time.sleep(10)
 
         download_buttons = WebDriverWait(driver, 20).until(
@@ -44,8 +42,6 @@ def get_instagram_stories(url, download_folder):
         for index, download_button in enumerate(download_buttons):
             download_url = download_button.get_attribute("href")
             media_type = download_button.get_attribute("data-mediatype")
-
-            username = urllib.parse.urlparse(url).path.split('/')[2]
 
             if media_type.lower() == "image":
                 extension = "jpg"
@@ -65,6 +61,7 @@ def get_instagram_stories(url, download_folder):
 
     except Exception as e:
         print("An error occurred:", e)
+        return False
 
     finally:
         driver.quit()
@@ -89,12 +86,11 @@ def run_script():
     ######################################################################
     # Folder
     download_folder = r"(YOUR FOLDER PATH)"
-    # Example = r"C:\Users\PC\Downloads\InstaDownloader"
+    # Example = r"C:\Users\PC\Downloads\InstaDownloader\"
     # Example = r"/home/kali/Downloads/InstaDownloader/"
-    # User                                                 User id ↓
-    instagram_stories_url = "https://www.instagram.com/stories/jiri_mdf/0"
+    # User id      ↓
+    username = "jiri_mdf"
     ######################################################################
-
 
     stories_folder = os.path.join(download_folder, "Stories")
     if not os.path.exists(stories_folder):
@@ -105,10 +101,12 @@ def run_script():
         with open(downloaded_links_file, "w"):
             pass
 
-    get_instagram_stories(instagram_stories_url, download_folder)
+    task_file_path = os.path.join(download_folder, 'task.txt')
+    if not os.path.exists(task_file_path):
+        with open(task_file_path, 'w') as task_file:
+            task_file.write(f'{datetime.now()} - The script ran\n')
 
-    # Recording the run time in the task.txt file
-    with open(os.path.join(download_folder, 'task.txt'), 'a') as file:
-        file.write(f'{datetime.now()} - The script ran\n')
+    if not get_instagram_stories(username, download_folder):
+        return False
 
 run_script()
