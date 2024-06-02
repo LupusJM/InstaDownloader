@@ -4,9 +4,8 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import time
 from datetime import datetime
-
+import time
 
 def get_instagram_stories(username, download_folder):
     options = webdriver.ChromeOptions()
@@ -17,45 +16,81 @@ def get_instagram_stories(username, download_folder):
     driver.get("https://fastdl.app/")
 
     try:
-        cookies_button = WebDriverWait(driver, 10).until(
+        print("Waiting for cookies button..")
+        cookies_button = WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.XPATH, "//button[@aria-label='Consent']"))
         )
         cookies_button.click()
+        print("Cookies button clicked.")
 
-        url_input = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//input[@name='url']"))
+        print("Waiting for username input..")
+        url_input = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.XPATH, "//input[@id='search-form-input']"))
         )
         url_input.send_keys(f"{username}")
+        print("Username entered.")
 
-        url_input.submit()
-
-        close_button = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.XPATH, "//button[contains(@class, 'ads-modal-close')]"))
+        print("Waiting for download button..")
+        download_button = WebDriverWait(driver, 20).until(
+            EC.presence_of_element_located((By.XPATH, "//button[@class='search-form__button']"))
         )
-        close_button.click()
-        time.sleep(10)
+        download_button.click()
+        print("Download button clicked.")
 
+        try:
+            print("Removing popup ad..")
+            popup_element = WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "ads-modal"))
+            )
+            driver.execute_script("""
+                var element = arguments[0];
+                element.parentNode.removeChild(element);
+                """, popup_element)
+            print("Popup ad removed.")
+        except Exception as e:
+            print("No popup ad detected or an error occurred:", e)
+
+        while True:
+            try:
+                see_more_button = WebDriverWait(driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, "//button[@class='button button--see-more profile-media-list__button--see-more']"))
+                )
+                see_more_button.click()
+                print("See more button clicked.")
+                time.sleep(2)
+            except:
+                print("No more 'See more' buttons.")
+                break
+
+        print("Waiting for download buttons to become clickable..")
         download_buttons = WebDriverWait(driver, 20).until(
-            EC.presence_of_all_elements_located((By.ID, "download-btn"))
+            EC.presence_of_all_elements_located((By.CSS_SELECTOR, "a.button--filled"))
         )
+        print(f"Found {len(download_buttons)} download buttons.")
 
         for index, download_button in enumerate(download_buttons):
             download_url = download_button.get_attribute("href")
-            media_type = download_button.get_attribute("data-mediatype")
+            response = requests.head(download_url)
+            content_type = response.headers.get('content-type')
 
-            if media_type.lower() == "image":
+            if 'image' in content_type:
                 extension = "jpg"
-            else:
+            elif 'video' in content_type:
                 extension = "mp4"
+            else:
+                print(f"Unknown content type: {content_type}. Skipping download.")
+                continue
 
             download_date = datetime.now().strftime("%d%m%Y")
             filename = os.path.join(download_folder, "Stories", f"LupusDownloader_{username}_{download_date}_{index + 1}.{extension}")
 
             if not is_already_downloaded(download_url, download_folder):
+                print(f"Downloading {download_url} to {filename}..")
                 response = requests.get(download_url)
                 with open(filename, 'wb') as file:
                     file.write(response.content)
                 record_downloaded_link(download_url, download_folder)
+                print(f"Downloaded {download_url}.")
             else:
                 print(f"Link already downloaded: {download_url}")
 
@@ -66,29 +101,26 @@ def get_instagram_stories(username, download_folder):
     finally:
         driver.quit()
 
-
 def is_already_downloaded(download_url, download_folder):
     downloaded_links_file = os.path.join(download_folder, "downloaded_links.txt")
     if os.path.exists(downloaded_links_file):
         with open(downloaded_links_file, "r") as f:
-            return download_url in f.read()
+            existing_links = [line.strip().split('&')[0] for line in f.readlines()]
+            return download_url.split('&')[0] in existing_links
     return False
-
 
 def record_downloaded_link(download_url, download_folder):
     downloaded_links_file = os.path.join(download_folder, "downloaded_links.txt")
     with open(downloaded_links_file, "a") as f:
         f.write(download_url + "\n")
 
-
 def run_script():
-
     ######################################################################
     # Folder
     download_folder = r"(YOUR FOLDER PATH)"
     # Example = r"C:\Users\PC\Downloads\InstaDownloader\"
     # Example = r"/home/kali/Downloads/InstaDownloader/"
-    # User id      ↓
+    # User id
     username = "jiri_mdf"
     ######################################################################
 
