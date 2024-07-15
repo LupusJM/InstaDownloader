@@ -149,7 +149,7 @@ def run_script():
     if not os.path.exists(stories_folder):
         os.makedirs(stories_folder)
 
-    downloaded_links_file = os.path.    join(download_folder, "downloaded_links.txt")
+    downloaded_links_file = os.path.join(download_folder, "downloaded_links.txt")
     if not os.path.exists(downloaded_links_file):
         with open(downloaded_links_file, "w"):
             pass
