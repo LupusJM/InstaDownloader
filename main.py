@@ -9,7 +9,7 @@ import time
 
 def get_instagram_stories(username, download_folder):
     options = webdriver.ChromeOptions()
-    # options.add_argument('--headless')
+    options.add_argument('--headless')
     driver = webdriver.Chrome(options=options)
     driver.maximize_window()
 
